@@ -12,7 +12,8 @@ were a breach of security and someone fi gured out the password for the root use
 all sorts of bad things could happen to your system (and data).
 
 To prevent that, it’s wise to create a separate user account in MySQL that has privileges
-only for the database used in the application. You do this with the [bash script]().
+only for the database used in the application. You do this with the [bash script](https://github.com/AnkitVarshneydevops/Manage-mysql-using-bash-script/tree/master).
+
 **Logging into the server**
 
 If you’ve created a special user account in MySQL for your shell scripts, you need to use it
@@ -42,55 +43,93 @@ test this now from the command line:
 **$ mysql -u test**
 
 ## Bash Script for creating database
+
 #!/bin/bash
+
 USER=$1
+
 DATABASENAME=$2
+
 if[ $# -ne 2 ]
+
 then
+
 echo "Usage: $0 has user-name and database-name"
+
 else
+
 mysql -u $1 -e 'Create database $2'
+
 fi
 
 ## Bash Script for listing database
 
 #!/bin/bash
+
 if[ $# -ne 1 ]
+
 then
+
 echo "Usage: $0 has user-name"
+
 else
+
 mysql -u $1 -Bse 'show databases'
+
 fi
 
 ## Bash Script For Creating Table
 
 #!/bin/bash
+
 if[ $# -ne 2 ]
+
 then
+
 echo "Usage: $0 has user-name and database-name"
+
 else
+
 mysql -u $1 -e 'CREATE TABLE employees ( empid int not null,lastname varchar(30),firstname varchar(30),salary float,primary key (empid));' $2
+
 fi
 
 ## Bash Script For Inserting data into Table
 
 #!/bin/bash
-# send data to the table in the MySQL database
+
+#send data to the table in the MySQL database
+
 MYSQL=$(which mysql)
+
 if [ $# -ne 4 ]
+
 then
+
 echo "Usage: mtest3 empid lastname firstname salary"
+
 else
+
 statement="INSERT INTO employees VALUES ($1, '$2', '$3', $4)"
+
 $MYSQL mytest -u root  << EOF
+
 $statement
+
 EOF
+
 if [ $? -eq 0 ]
+
 then
+
 echo Data successfully added
+
 else
+
 echo Problem adding data
+
 fi
+
 fi
 
 ## Back Up from the Command-Line with mysqldump
@@ -108,6 +147,9 @@ The > command specifies the output.
 [filename] is the path and filename you want to save the dump file as.
 
 #!/bin/bash
+
 DBNAME=`mysql -u root -Bse 'show databases' | grep mytest`
+
 echo "Taking Backup of $DBNAME"
+
 mysqldump -u root $DBNAME > /tmp/$DBNAME.dump
