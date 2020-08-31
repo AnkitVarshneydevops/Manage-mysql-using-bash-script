@@ -19,7 +19,7 @@ If you’ve created a special user account in MySQL for your shell scripts, you 
 to log in with the mysql command. There are a couple ways to do that. One method is to
 include the password on the command line using the -p parameter:
  
-   **mysql mytest -u test –p test**
+   **mysql -u test –p test**
 
 This, however, is not a good idea. Anyone who has access to your script will know the user
 account and password for your database.
@@ -36,7 +36,78 @@ To set the default password in this file, just create the following:
   **password = test**
   
   **$ chmod 400 .my.cnf**
+The chmod command is used to restrict the .my.cnf file so only you can view it. You can
+test this now from the command line:
 
-Bash Script for creating database
+**$ mysql -u test**
+
+## Bash Script for creating database
 #!/bin/bash
-mysql -u test -e 'Create database database-name'
+USER=$1
+DATABASENAME=$2
+if[ $# -ne 2 ]
+then
+echo "Usage: $0 has user-name and database-name"
+else
+mysql -u $1 -e 'Create database $2'
+fi
+
+## Bash Script for listing database
+
+#!/bin/bash
+if[ $# -ne 1 ]
+then
+echo "Usage: $0 has user-name"
+else
+mysql -u $1 -Bse 'show databases'
+fi
+
+## Bash Script For Creating Table
+
+#!/bin/bash
+if[ $# -ne 2 ]
+then
+echo "Usage: $0 has user-name and database-name"
+else
+mysql -u $1 -e 'CREATE TABLE employees ( empid int not null,lastname varchar(30),firstname varchar(30),salary float,primary key (empid));' $2
+fi
+
+## Bash Script For Inserting data into Table
+
+#!/bin/bash
+# send data to the table in the MySQL database
+MYSQL=$(which mysql)
+if [ $# -ne 4 ]
+then
+echo "Usage: mtest3 empid lastname firstname salary"
+else
+statement="INSERT INTO employees VALUES ($1, '$2', '$3', $4)"
+$MYSQL mytest -u root  << EOF
+$statement
+EOF
+if [ $? -eq 0 ]
+then
+echo Data successfully added
+else
+echo Problem adding data
+fi
+fi
+
+## Back Up from the Command-Line with mysqldump
+The mysqldump client utility can dump a database including the SQL statements required to rebuild the database.
+
+By default, the dump file includes the SQL commands to restore the tables and data.
+
+To back up your MySQL database, the general syntax is:
+
+**sudo mysqldump -u [user] -p [database_name] > [filename].sql**
+
+Replace [user] with your username and password (if needed).
+The [database_name] is the path and filename of the database.
+The > command specifies the output.
+[filename] is the path and filename you want to save the dump file as.
+
+#!/bin/bash
+DBNAME=`mysql -u root -Bse 'show databases' | grep mytest`
+echo "Taking Backup of $DBNAME"
+mysqldump -u root $DBNAME > /tmp/$DBNAME.dump
