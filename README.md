@@ -14,10 +14,13 @@ settings. One of those settings is the default password for mysql sessions start
 user account.
 To set the default password in this file, just create the following:
 
-**$ cat .my.cnf
-  [client]
-  password = test
-  $ chmod 400 .my.cnf**
+**$ cat .my.cnf**
+
+  **[client]**
+  
+  **password = test**
+  
+  **$ chmod 400 .my.cnf**
 
 Bash Script for creating database
 #!/bin/bash
