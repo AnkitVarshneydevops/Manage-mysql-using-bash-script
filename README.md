@@ -44,23 +44,7 @@ test this now from the command line:
 
 ## Bash Script for creating database
 
-#!/bin/bash
 
-USER=$1
-
-DATABASENAME=$2
-
-if[ $# -ne 2 ]
-
-then
-
-echo "Usage: $0 has user-name and database-name"
-
-else
-
-mysql -u $1 -e 'Create database $2'
-
-fi
 
 ## Bash Script for listing database
 
